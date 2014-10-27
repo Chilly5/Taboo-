@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Taboo!</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_setup">SetupActivity</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="playbutton">Play</string>
+    <string name="instructionsbutton">Instructions</string>
+    <string name="settingsbutton">Settings</string>
+    <string name="buzzerbutton">Buzzer</string>
+    <string name="word0">Kanishka</string>
+    <string name="word1">Ghuri</string>
+    <string name="word2">Pataliputra</string>
+    <string name="word3">Magadha</string>
+    <string name="word4">Gandahar</string>
+    <string name="word5">Kunti</string>
+    <string name="word6">Pandava</string>
+    <string name="word7">Chola</string>
+    <string name="word8">Kushan</string>
+    <string name="word9">Pushyamitra</string>
+    
+
+</resources>
