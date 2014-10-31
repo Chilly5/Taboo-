@@ -14,9 +14,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
-import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -29,18 +31,15 @@ public class MainActivity extends Activity {
 	int width = 0;
 	int height = 0;
 	final double xrange = 1.0;
-	int dmin = 5000, drange = 10000, tmin = 0, trange = 5000;
+	int dmin = 6000, drange = 7000, tmin = 0, trange = 5000;
 	double amin = 0.1, arange = 0.5, ymin = 0;
 	String[] rainwords = {"Vijanayagara","Gopati","Delhi","Tughluq","Bahmani","Ghandara","Orissa","Calicut"};
 	RelativeLayout relativelayout;
 	RelativeLayout relativelayout2;
 	RelativeLayout relativelayout3;
-
-
 	RelativeLayout.LayoutParams title_dimensions;
 	int i = 0;
-	int j = 0;
-	
+	int j = 0;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +50,7 @@ public class MainActivity extends Activity {
         relativelayout2.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         relativelayout3 = new RelativeLayout(this);
         relativelayout3.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
         
-
-
         addMenu();
 		addRain();
 		setContentView(relativelayout);
@@ -79,48 +75,76 @@ public class MainActivity extends Activity {
 	}
 	
 	public void addRain(){
-		RotateAnimation rotate= (RotateAnimation)AnimationUtils.loadAnimation(this,R.anim.rotate);
-
 		TextView raintxt1 = new TextView(this);
-		raintxt1.setAnimation(rotate);
-		raintxt1.startAnimation(rotate);
 		animationrain(raintxt1);
 		rainstring(raintxt1);
 		relativelayout.addView(raintxt1);
 		
 		TextView raintxt2 = new TextView(this);
-		raintxt2.setAnimation(rotate);
 		animationrain(raintxt2);
 		rainstring(raintxt2);
 		relativelayout.addView(raintxt2);
 		
 		TextView raintxt3 = new TextView(this);
-		raintxt3.setAnimation(rotate);
 		animationrain(raintxt3);
 		rainstring(raintxt3);
 		relativelayout.addView(raintxt3);
 
 		TextView raintxt4 = new TextView(this);
-		raintxt4.setAnimation(rotate);
 		animationrain(raintxt4);
 		rainstring(raintxt4);
 		relativelayout.addView(raintxt4);
 		
 		TextView raintxt5 = new TextView(this);
+		animationrain(raintxt5);
+		rainstring(raintxt5);
+		relativelayout.addView(raintxt5);
+		
 		TextView raintxt6 = new TextView(this);
+		animationrain(raintxt6);
+		rainstring(raintxt6);
+		relativelayout.addView(raintxt6);
+		
 		TextView raintxt7 = new TextView(this);
+		animationrain(raintxt7);
+		rainstring(raintxt7);
+		relativelayout.addView(raintxt7);
+		
 		TextView raintxt8 = new TextView(this);
+		animationrain(raintxt8);
+		rainstring(raintxt8);
+		relativelayout.addView(raintxt8);
 	}
 	
 	public void animationrain(View i) {
-	    float xcoord = (float) (xrange*width*Math.random());
+		AnimationSet animSet = new AnimationSet(true);
+		
+		//rotate animation
+		RotateAnimation rotate= new RotateAnimation(0, 90, 0, 0);
+		rotate.setDuration(0);
+		rotate.setFillAfter(true);
+		animSet.addAnimation(rotate);
 	    
-	    ScaleAnimation scaler = new ScaleAnimation(1, 10, 1, 10, Animation.RELATIVE_TO_SELF, (float)0.5, Animation.RELATIVE_TO_SELF, (float)0.5);
-		scaler.setDuration(0);
-
-	    TranslateAnimation raindown = new TranslateAnimation(xcoord, xcoord, (float) -height, (float) height);
-		raindown.setDuration((long) (dmin + (Math.random() * (drange))));
-		i.startAnimation(raindown);
+		//scaler animation
+	    //ScaleAnimation scaler = new ScaleAnimation(1, 10, 1, 10, Animation.RELATIVE_TO_SELF, (float)0.5, Animation.RELATIVE_TO_SELF, (float)0.5);
+		//scaler.setDuration(0);
+		
+		//transparency animation
+		float alpha = (float)(0.35 +(Math.random()*(3/10)));
+		AlphaAnimation trans = new AlphaAnimation(0.0f , alpha) ; 
+		trans.setDuration(0);
+		trans.setFillAfter(true);
+		animSet.addAnimation(trans);
+		
+		//translate animation
+	    float xcoord = (float) (xrange*width*Math.random());
+	    TranslateAnimation raindown = new TranslateAnimation(xcoord, xcoord, (float) -height/2, (float) height);
+	    raindown.setDuration((long) (dmin + (Math.random() * (drange))));
+		raindown.setRepeatCount(-1);
+		animSet.addAnimation(raindown);
+		
+		animSet.setInterpolator(new LinearInterpolator());
+		i.startAnimation(animSet);
 	}
 	
 	public void animationfade(View i) {
@@ -262,7 +286,7 @@ public class MainActivity extends Activity {
 					
 					justplaybutton.setOnClickListener(new OnClickListener() {
 						public void onClick(View v){
-							start_button();
+							start_button(relativelayout);
 						}
 					});
 					
@@ -293,11 +317,33 @@ public class MainActivity extends Activity {
 		relativelayout.addView(relativelayout3);
 	}
 	
-	public void start_button() {
-	    // Do something in response to button
-		Intent intent = new Intent(this, GameActivity.class);
-		startActivity(intent);
-		overridePendingTransition(0,0);
+	public void start_button(View i) {
+		AlphaAnimation fadeEnd = new AlphaAnimation(1.0f , 0.0f ) ; 
+		fadeEnd.setDuration(500);
+		i.startAnimation(fadeEnd);
+		//i.setVisibility(View.GONE);
+		fadeEnd.setAnimationListener(new AnimationListener() {
+		    @Override
+		    public void onAnimationEnd(Animation animation) {
+		    	
+                Intent i = new Intent( MainActivity.this, GameActivity.class );
+                MainActivity.this.startActivity( i );
+				overridePendingTransition(0,0);
+		    }
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onAnimationStart(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 	}
 	
 	private void getTheDisplay() {
