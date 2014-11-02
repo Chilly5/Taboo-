@@ -27,6 +27,11 @@ public class GameActivity extends Activity {
 	RelativeLayout relativelayout1;
 	RelativeLayout relativelayout2;
 	
+	RelativeLayout cardlayout1;
+	RelativeLayout cardlayout2;
+	
+	int card_counter = 0;
+	
 	int width = 0;
 	int height = 0;
 	
@@ -51,9 +56,15 @@ public class GameActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//relativelayout1 is the base layout
         relativelayout1 = new RelativeLayout(this);
+        //relativelayout2 is used for the ready page
         relativelayout2 = new RelativeLayout(this);
         relativelayout2.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        //cardlayout1 is used for the first draw, and every other draw after
+        cardlayout1 = new RelativeLayout(this);
+        //cardlayout2 is used for the second draw, and every other draw after
+        cardlayout2 = new RelativeLayout(this);
         getTheDisplay();
         readypage();
         
@@ -351,8 +362,41 @@ public class GameActivity extends Activity {
 				animationfadeout(relativelayout2);
 				k.startAnimation(animSet4);
 				j.startAnimation(animSet5);
+				draw_card();
 			}
 		});
+	}
+	
+	public void draw_card() {
+		ImageView card_image = new ImageView(this);
+		card_image.setImageResource(R.drawable.card_image2);
+		
+		AnimationSet carddrawset = new AnimationSet(true);
+			TranslateAnimation carddraw = new TranslateAnimation(0, 0, height + (9*height)/10, height/10);
+			carddraw.setDuration(500);
+			carddraw.setFillAfter(true);
+			carddrawset.addAnimation(carddraw);
+		
+			AlphaAnimation cardfadein = new AlphaAnimation(0.0f , 1.0f ) ; 
+			cardfadein.setDuration(500);
+			carddrawset.addAnimation(cardfadein);
+		
+		card_image.startAnimation(carddrawset);
+			
+		RelativeLayout.LayoutParams card_dimensions = new RelativeLayout.LayoutParams((9*width)/10, (9*height)/10);		
+		card_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		
+		if (card_counter > 0){
+			card_counter -= 1;
+			
+		} else {
+			card_counter +=1;
+			cardlayout1.setLayoutParams(card_dimensions);
+			cardlayout1.addView(card_image);
+			relativelayout1.addView(cardlayout1);
+		}
+		
+		
 	}
 	
 	private void getTheDisplay() {

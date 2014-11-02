@@ -1076,12 +1076,13 @@ containing a value of this type.
         public static final int blacklogo2=0x7f02005a;
         public static final int buttonicon_justplay=0x7f02005b;
         public static final int card_image=0x7f02005c;
-        public static final int examplemenu=0x7f02005d;
-        public static final int examplesetup=0x7f02005e;
-        public static final int ic_launcher=0x7f02005f;
-        public static final int logograce=0x7f020060;
-        public static final int play_button=0x7f020061;
-        public static final int taboo_logo=0x7f020062;
+        public static final int card_image2=0x7f02005d;
+        public static final int examplemenu=0x7f02005e;
+        public static final int examplesetup=0x7f02005f;
+        public static final int ic_launcher=0x7f020060;
+        public static final int logograce=0x7f020061;
+        public static final int play_button=0x7f020062;
+        public static final int taboo_logo=0x7f020063;
     }
     public static final class id {
         public static final int action_bar=0x7f05001c;
