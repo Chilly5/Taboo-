@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -43,6 +44,14 @@ public class GameActivity extends Activity {
 	int num_round = 1;
 	int team_number = 0;
 	
+	int time = 10;
+	int time_initial = 10;
+	
+	int counter = 60;
+	private final long startTime = 30 * 1000;
+	private final long interval = 1 * 1000;
+	public TextView textCounter;
+	
 	String current_team;
 		
 	String[] words = {
@@ -65,8 +74,10 @@ public class GameActivity extends Activity {
         cardlayout1 = new RelativeLayout(this);
         //cardlayout2 is used for the second draw, and every other draw after
         cardlayout2 = new RelativeLayout(this);
+        //measure height and width of screen
         getTheDisplay();
-        readypage();
+        //starts the ready page
+        readypageinst();
         
 		setContentView(relativelayout1);
 	}
@@ -80,13 +91,13 @@ public class GameActivity extends Activity {
 
 	}
 	
-	public void roundfadein(final View i, final View j, final View k, final View l, final View m, final View n, final View o, final View p) {
+	public void roundfadein (final TextView roundtext, final TextView red_score_text, final TextView blue_score_text, final TextView red_score_title, final TextView blue_score_title, final TextView tapready, final TextView nexteam, final ImageView blackbar, final ImageView readybutton) {
 		final AlphaAnimation roundfade = new AlphaAnimation(0.0f , 1.0f ) ; 
 		roundfade.setDuration(1000);
 		roundfade.setFillAfter(true);
-		i.startAnimation(roundfade);
+		roundtext.startAnimation(roundfade);
 		
-		getviewwidth(k);
+		getviewwidth(blue_score_text);
 		
 		roundfade.setAnimationListener(new AnimationListener() {
 		    @Override
@@ -95,13 +106,13 @@ public class GameActivity extends Activity {
 			    TranslateAnimation roundmove = new TranslateAnimation(0, 0, 0, (float) -(2*height)/10);
 				roundmove.setDuration(800);
 				roundmove.setFillAfter(true);
-				i.startAnimation(roundmove);
+				roundtext.startAnimation(roundmove);
 				
-		    	j.setX((width/5) + (width/4) + view_width);
-		    	k.setX((-width/5) + (width/4));
+				red_score_text.setX((width/5) + (width/4) + view_width);
+				blue_score_text.setX((-width/5) + (width/4));
 		    	
-		    	l.setX((width/5) + (width/4) + view_width);
-		    	m.setX((-width/5) + (width/4));
+				red_score_title.setX((width/5) + (width/4) + view_width);
+				blue_score_title.setX((-width/5) + (width/4));
 
 				AnimationSet animSet1 = new AnimationSet(true);
 		    	
@@ -116,7 +127,7 @@ public class GameActivity extends Activity {
 				scoremove1.setFillAfter(true);
 				animSet1.addAnimation(scoremove1);
 				
-				j.startAnimation(animSet1);
+				red_score_text.startAnimation(animSet1);
 				
 				AnimationSet animSet2 = new AnimationSet(true);
 		    	
@@ -127,13 +138,13 @@ public class GameActivity extends Activity {
 				scoremove2.setFillAfter(true);
 				animSet2.addAnimation(scoremove2);
 				
-				k.startAnimation(animSet2);
+				blue_score_text.startAnimation(animSet2);
 				
 				animSet1.setAnimationListener(new AnimationListener() {
 				    @Override
 				    public void onAnimationEnd(Animation animation) {
-				    	j.setVisibility(View.VISIBLE);
-				    	k.setVisibility(View.VISIBLE);
+				    	red_score_text.setVisibility(View.VISIBLE);
+				    	blue_score_text.setVisibility(View.VISIBLE);
 				    }
 					@Override
 					public void onAnimationRepeat(Animation arg0) {
@@ -147,14 +158,14 @@ public class GameActivity extends Activity {
 				textfade.setDuration(800);
 				textfade.setFillAfter(true);
 				textfade.setStartOffset(800);
-				l.startAnimation(textfade);
-				m.startAnimation(textfade);
+				red_score_title.startAnimation(textfade);
+				blue_score_title.startAnimation(textfade);
 				
-				final AlphaAnimation barfade = new AlphaAnimation(0.0f , 1.0f ) ; 
-				barfade.setDuration(800);
-				barfade.setFillAfter(true);
-				barfade.setStartOffset(400);
-				n.startAnimation(barfade);
+				final AlphaAnimation nextfade = new AlphaAnimation(0.0f , 1.0f ) ; 
+				nextfade.setDuration(800);
+				nextfade.setFillAfter(true);
+				nextfade.setStartOffset(1200);
+				nexteam.startAnimation(nextfade);
 				
 				final AnimationSet animSet3 = new AnimationSet(true);
 				
@@ -168,19 +179,17 @@ public class GameActivity extends Activity {
 				readyfadeout.setStartOffset(2000);
 				animSet3.addAnimation(readyfadeout);
 				
-				final AlphaAnimation nextfade = new AlphaAnimation(0.0f , 1.0f ) ; 
-				nextfade.setDuration(800);
-				nextfade.setFillAfter(true);
-				nextfade.setStartOffset(1200);
-				p.startAnimation(nextfade);
-				
-
-
+				final AlphaAnimation barfade = new AlphaAnimation(0.0f , 1.0f ) ; 
+				barfade.setDuration(800);
+				barfade.setFillAfter(true);
+				barfade.setStartOffset(400);
+				blackbar.startAnimation(barfade);
+		
 				nextfade.setAnimationListener(new AnimationListener() {
 				    @Override
 				    public void onAnimationEnd(Animation animation) {
-				    	o.startAnimation(animSet3);
-				    	readybutton(j, k);
+				    	tapready.startAnimation(animSet3);
+				    	readybutton(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
 				    }
 					@Override
 					public void onAnimationRepeat(Animation arg0) {
@@ -193,7 +202,7 @@ public class GameActivity extends Activity {
 		    	animSet3.setAnimationListener(new AnimationListener() {
 				    @Override
 				    public void onAnimationEnd(Animation animation) {
-				    	o.startAnimation(animSet3);
+				    	tapready.startAnimation(animSet3);
 				    }
 					@Override
 					public void onAnimationRepeat(Animation arg0) {
@@ -218,13 +227,43 @@ public class GameActivity extends Activity {
 		});
 	}
 	
-	public void readypage() {
+	public void readypageinst(){
+		Typeface type = Typeface.createFromAsset(getAssets(),"fonts/GeosansLight.ttf");
+		
+		TextView roundtext = new TextView(this);
+		roundtext.setTypeface(type);
+		
+		TextView red_score_text = new TextView(this);
+		red_score_text.setTypeface(type);
+
+		TextView red_score_title = new TextView(this);
+		red_score_title.setTypeface(type);
+		
+		TextView blue_score_text = new TextView(this);
+		blue_score_text.setTypeface(type);
+
+		TextView blue_score_title = new TextView(this);
+		blue_score_title.setTypeface(type);
+		
+		TextView tapready = new TextView(this);
+		tapready.setTypeface(type);
+
+		TextView nexteam = new TextView(this);
+		nexteam.setTypeface(type);
+		
+		ImageView blackbar = new ImageView(this);
+		blackbar.setImageResource(R.drawable.blackbar);
+		
+		ImageView readybutton = new ImageView(this);
+		
+		readypage(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+	}
+	
+	
+	public void readypage(TextView roundtext, TextView red_score_text, TextView blue_score_text, TextView red_score_title, TextView blue_score_title, TextView tapready, TextView nexteam, ImageView blackbar, ImageView readybutton) {
 		declare_team();
 		
 		//round number text
-		TextView roundtext = new TextView(this);
-		Typeface type = Typeface.createFromAsset(getAssets(),"fonts/GeosansLight.ttf");
-		roundtext.setTypeface(type);
 		roundtext.setText("Round" + " " + Integer.toString(num_round));
 		RelativeLayout.LayoutParams word_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);		
 	    word_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -235,9 +274,7 @@ public class GameActivity extends Activity {
 		relativelayout2.addView(roundtext);
 		relativelayout1.addView(relativelayout2);
 		
-		TextView red_score_text = new TextView(this);
 		red_score_text.setText(Integer.toString(red_score));
-		red_score_text.setTypeface(type);
     	red_score_text.setTextColor(Color.RED);
 		red_score_text.setLayoutParams(word_dimensions);
 	    red_score_text.setTextSize(height/45);
@@ -246,20 +283,16 @@ public class GameActivity extends Activity {
 		red_score_text.setVisibility(View.INVISIBLE);
 		relativelayout1.addView(red_score_text);
 		
-		TextView red_score = new TextView(this);
-		red_score.setText("Red Score");
-		red_score.setTypeface(type);
-		red_score.setTextColor(Color.RED);
-		red_score.setLayoutParams(word_dimensions);
-		red_score.setTextSize(height/65);
-		red_score.setGravity(Gravity.CENTER);
-		red_score.setY(((3*height)/10) + height/50);
-		red_score.setVisibility(View.INVISIBLE);
-		relativelayout2.addView(red_score);
+		red_score_title.setText("Red Score");
+		red_score_title.setTextColor(Color.RED);
+		red_score_title.setLayoutParams(word_dimensions);
+		red_score_title.setTextSize(height/65);
+		red_score_title.setGravity(Gravity.CENTER);
+		red_score_title.setY(((3*height)/10) + height/50);
+		red_score_title.setVisibility(View.INVISIBLE);
+		relativelayout2.addView(red_score_title);
 		
-		TextView blue_score_text = new TextView(this);
 		blue_score_text.setText(Integer.toString(blue_score));
-		blue_score_text.setTypeface(type);
     	blue_score_text.setTextColor(Color.BLUE);
 		blue_score_text.setLayoutParams(word_dimensions);
 	    blue_score_text.setTextSize(height/45);
@@ -268,20 +301,16 @@ public class GameActivity extends Activity {
 		blue_score_text.setVisibility(View.INVISIBLE);
 		relativelayout1.addView(blue_score_text);
 		
-		TextView blue_score = new TextView(this);
-		blue_score.setText("Blue Score");
-		blue_score.setTypeface(type);
-		blue_score.setTextColor(Color.BLUE);
-		blue_score.setLayoutParams(word_dimensions);
-		blue_score.setTextSize(height/65);
-		blue_score.setGravity(Gravity.CENTER);
-		blue_score.setY(((3*height)/10) + (height/50));
-		blue_score.setVisibility(View.INVISIBLE);
-		relativelayout2.addView(blue_score);
-		
-		TextView tapready = new TextView(this);
+		blue_score_title.setText("Blue Score");
+		blue_score_title.setTextColor(Color.BLUE);
+		blue_score_title.setLayoutParams(word_dimensions);
+		blue_score_title.setTextSize(height/65);
+		blue_score_title.setGravity(Gravity.CENTER);
+		blue_score_title.setY(((3*height)/10) + (height/50));
+		blue_score_title.setVisibility(View.INVISIBLE);
+		relativelayout2.addView(blue_score_title);
+
 		tapready.setText("tap the screen to start");
-		tapready.setTypeface(type);
 		RelativeLayout.LayoutParams ready_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (7*height/40));		
 		ready_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		tapready.setLayoutParams(ready_dimensions);
@@ -292,18 +321,7 @@ public class GameActivity extends Activity {
 		tapready.setVisibility(View.INVISIBLE);
 		relativelayout2.addView(tapready);
 		
-		final ImageView blackbar = new ImageView(this);
-		blackbar.setImageResource(R.drawable.blackbar);
-		RelativeLayout.LayoutParams bar_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (7*height/40));		
-		bar_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		blackbar.setLayoutParams(bar_dimensions);
-		blackbar.setY((13*height)/40);
-		blackbar.setVisibility(View.INVISIBLE);
-		relativelayout2.addView(blackbar);
-		
-		TextView nexteam = new TextView(this);
 		nexteam.setText(current_team + " " + "is next");
-		nexteam.setTypeface(type);
 		nexteam.setLayoutParams(word_dimensions);
 		nexteam.setTextSize(height/85);
 		nexteam.setGravity(Gravity.CENTER);
@@ -311,8 +329,14 @@ public class GameActivity extends Activity {
 		nexteam.setVisibility(View.INVISIBLE);
 		relativelayout2.addView(nexteam);
 		
-		roundfadein(roundtext, red_score_text, blue_score_text, red_score, blue_score, blackbar, tapready, nexteam);
+		RelativeLayout.LayoutParams bar_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (7*height/40));		
+		bar_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		blackbar.setLayoutParams(bar_dimensions);
+		blackbar.setY((13*height)/40);
+		blackbar.setVisibility(View.INVISIBLE);
+		relativelayout2.addView(blackbar);
 		
+		roundfadein(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
 	}
 	
 	public void declare_team() {
@@ -331,8 +355,15 @@ public class GameActivity extends Activity {
 		i.setVisibility(View.GONE);
 	}
 	
-	public void readybutton(final View j, final View k) {
-		ImageView readybutton = new ImageView(this);
+	public void animationfadein(View i) {
+		AlphaAnimation fadein = new AlphaAnimation(0.0f , 1.0f ) ; 
+		fadein.setDuration(500);
+		i.startAnimation(fadein);
+		i.setVisibility(View.VISIBLE);
+	}
+	
+
+	public void readybutton (final TextView roundtext, final TextView red_score_text, final TextView blue_score_text, final TextView red_score_title, final TextView blue_score_title, final TextView tapready, final TextView nexteam, final ImageView blackbar, final ImageView readybutton) {
 		RelativeLayout.LayoutParams readybutton_dimensions = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);		
 		readybutton_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		readybutton.setLayoutParams(readybutton_dimensions);
@@ -358,11 +389,13 @@ public class GameActivity extends Activity {
 		//animSet5.addAnimation(scaler);
 		
 		readybutton.setOnClickListener(new OnClickListener() {
+			
 			public void onClick(View v){
 				animationfadeout(relativelayout2);
-				k.startAnimation(animSet4);
-				j.startAnimation(animSet5);
+				blue_score_text.startAnimation(animSet4);
+				red_score_text.startAnimation(animSet5);
 				draw_card();
+				timer(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
 			}
 		});
 	}
@@ -372,17 +405,18 @@ public class GameActivity extends Activity {
 		card_image.setImageResource(R.drawable.card_image2);
 		
 		AnimationSet carddrawset = new AnimationSet(true);
-			TranslateAnimation carddraw = new TranslateAnimation(0, 0, height + (9*height)/10, height/10);
-			carddraw.setDuration(500);
+		
+			AlphaAnimation cardfadein = new AlphaAnimation(0.0f , 1.0f ) ; 
+			cardfadein.setDuration(1000);
+			carddrawset.addAnimation(cardfadein);
+		
+			TranslateAnimation carddraw = new TranslateAnimation(0, 0, (1*height)/10, 0);
+			carddraw.setDuration(1000);
 			carddraw.setFillAfter(true);
 			carddrawset.addAnimation(carddraw);
 		
-			AlphaAnimation cardfadein = new AlphaAnimation(0.0f , 1.0f ) ; 
-			cardfadein.setDuration(500);
-			carddrawset.addAnimation(cardfadein);
-		
 		card_image.startAnimation(carddrawset);
-			
+		
 		RelativeLayout.LayoutParams card_dimensions = new RelativeLayout.LayoutParams((9*width)/10, (9*height)/10);		
 		card_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		
@@ -395,12 +429,167 @@ public class GameActivity extends Activity {
 			cardlayout1.addView(card_image);
 			relativelayout1.addView(cardlayout1);
 		}
+	}
+	
+	public void timer(final TextView roundtext, final TextView red_score_text, final TextView blue_score_text, final TextView red_score_title, final TextView blue_score_title, final TextView tapready, final TextView nexteam, final ImageView blackbar, final ImageView readybutton){
+		final TextView timer = new TextView(this);
+		Typeface type = Typeface.createFromAsset(getAssets(),"fonts/GeosansLight.ttf");
+		timer.setTypeface(type);
+		timer.setText(Integer.toString(time));
+		RelativeLayout.LayoutParams timer_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);		
+		timer_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		timer.setLayoutParams(timer_dimensions);
+		timer.setTextSize(height/55);
+		timer.setGravity(Gravity.CENTER);
+		timer.setY(height/80);
 		
+		relativelayout1.addView(timer);
 		
+		AlphaAnimation timerfadeinitial = new AlphaAnimation(0.0f , 1.0f ) ; 
+		timerfadeinitial.setDuration(1000);
+		
+		AlphaAnimation timerfadein = new AlphaAnimation(5.0f , 1.0f ) ; 
+		timerfadein.setDuration(1000);
+		if (time <= 5 && time != 0) {
+			//timer.setTextColor(Color.RED);
+			AnimationSet timerend = new AnimationSet(true);
+			AlphaAnimation timerfadeend = new AlphaAnimation(0.0f , 1.0f ) ; 
+			timerfadeend.setDuration(1000);
+			timerend.addAnimation(timerfadeend);
+			ScaleAnimation timerscaleend = new ScaleAnimation(2, 1, 2, 1, Animation.RELATIVE_TO_SELF, (float)0.5, Animation.RELATIVE_TO_SELF, (float)0.5);
+			timerscaleend.setDuration(1000);
+			timerend.addAnimation(timerscaleend);
+			timer.startAnimation(timerend);
+			
+			timerend.setAnimationListener(new AnimationListener() {
+			    @Override
+			    public void onAnimationEnd(Animation animation) {
+			    	time -= 1;
+			        timer.setVisibility(View.GONE) ;
+			    	timer2(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+			    }
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+				}
+				@Override
+				public void onAnimationStart(Animation arg0) {
+				}
+			});
+		} else if (time == 0) {
+			timer.setVisibility(View.GONE);
+			num_round += 1;
+			cardlayout1.setVisibility(View.GONE);
+			cardlayout2.setVisibility(View.GONE);
+			//animationfadein(relativelayout2);
+			readypage(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+		} else if (time == time_initial) {
+			timer.startAnimation(timerfadeinitial);
+			timerfadeinitial.setAnimationListener(new AnimationListener() {
+			    @Override
+			    public void onAnimationEnd(Animation animation) {
+			    	time -= 1;
+			        timer.setVisibility(View.GONE) ;
+			    	timer2(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+			    }
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+				}
+				@Override
+				public void onAnimationStart(Animation arg0) {
+				}
+			});
+		} else {
+			timer.startAnimation(timerfadein);
+			timerfadein.setAnimationListener(new AnimationListener() {
+			    @Override
+			    public void onAnimationEnd(Animation animation) {
+			    	time -= 1;
+			        timer.setVisibility(View.GONE) ;
+			    	timer2(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+			    	
+			    }
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+				}
+				@Override
+				public void onAnimationStart(Animation arg0) {
+				}
+			});
+		}
+	}
+	
+	public void timer2(final TextView roundtext, final TextView red_score_text, final TextView blue_score_text, final TextView red_score_title, final TextView blue_score_title, final TextView tapready, final TextView nexteam, final ImageView blackbar, final ImageView readybutton){
+		final TextView timer2 = new TextView(this);
+		Typeface type = Typeface.createFromAsset(getAssets(),"fonts/GeosansLight.ttf");
+		timer2.setTypeface(type);
+		timer2.setText(Integer.toString(time));
+		RelativeLayout.LayoutParams timer_dimensions = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);		
+		timer_dimensions.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		timer2.setLayoutParams(timer_dimensions);
+		timer2.setTextSize(height/55);
+		timer2.setGravity(Gravity.CENTER);
+		timer2.setY(height/80);
+		
+		relativelayout1.addView(timer2);
+		
+		AlphaAnimation timerfadein = new AlphaAnimation(5.0f , 1.0f ) ; 
+		timerfadein.setDuration(1000);
+		
+		if (time <= 5 && time != 0) {
+			//timer2.setTextColor(Color.RED);
+			AnimationSet timerend = new AnimationSet(true);
+			AlphaAnimation timerfadeend = new AlphaAnimation(0.0f , 1.0f ) ; 
+			timerfadeend.setDuration(1000);
+			timerend.addAnimation(timerfadeend);
+			ScaleAnimation timerscaleend = new ScaleAnimation(2, 1, 2, 1, Animation.RELATIVE_TO_SELF, (float)0.5, Animation.RELATIVE_TO_SELF, (float)0.5);
+			timerscaleend.setDuration(1000);
+			timerend.addAnimation(timerscaleend);
+			timer2.startAnimation(timerend);
+			
+			timerend.setAnimationListener(new AnimationListener() {
+			    @Override
+			    public void onAnimationEnd(Animation animation) {
+			    	time -= 1;
+			    	timer2.setVisibility(View.GONE) ;
+			    	timer(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+			    	
+			    }
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+				}
+				@Override
+				public void onAnimationStart(Animation arg0) {
+				}
+			});
+		} else if (time == 0) {
+			timer2.setVisibility(View.GONE);
+			num_round += 1;
+			cardlayout1.setVisibility(View.GONE);
+			cardlayout2.setVisibility(View.GONE);
+			readypage(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+
+			//animationfadein(relativelayout2);
+			//readypage();
+		} else {
+			timer2.startAnimation(timerfadein);
+			timerfadein.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					time -= 1;
+					timer2.setVisibility(View.GONE) ;
+					timer(roundtext, red_score_text, blue_score_text, red_score_title, blue_score_title, tapready, nexteam, blackbar, readybutton);
+				}
+				@Override
+				public void onAnimationRepeat(Animation arg0) {
+				}
+				@Override
+				public void onAnimationStart(Animation arg0) {
+				}
+			});
+		}
 	}
 	
 	private void getTheDisplay() {
-
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         width = dm.widthPixels;
@@ -410,7 +599,6 @@ public class GameActivity extends Activity {
 	public void card_draw() {
 		ImageView card = new ImageView(this);
 		card.setImageResource(R.drawable.card_image);
-		
 	}
 
 	
